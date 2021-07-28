@@ -1,0 +1,1 @@
+include ':app', ':rajawali', ':rajawalivr', ':UI', ':PvrSDK-Native-release'

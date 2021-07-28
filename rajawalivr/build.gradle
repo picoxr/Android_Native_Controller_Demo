@@ -1,0 +1,76 @@
+apply plugin: 'com.android.library'
+
+String getVersionString() {
+    String v = VERSION_NAME.replaceAll(".(0)\$", "." + buildNumber())
+    v = isTag() ? v : v + "-SNAPSHOT"
+    return v
+}
+
+group = GROUP
+version = getVersionString()
+
+if (isReleaseBuild()) {
+    status = 'release'
+} else {
+    status = 'integration'
+}
+
+android {
+    compileSdkVersion rootProject.compileSdk
+    buildToolsVersion rootProject.buildTools
+
+
+    defaultConfig {
+        minSdkVersion 26
+        targetSdkVersion rootProject.targetSdk
+        versionCode rootProject.versionCode
+        versionName rootProject.versionName
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    task nativeLibsToJar(type: Zip, description: "create a jar archive of the native libs") {
+        destinationDir file("$projectDir/libs")
+        baseName "Native_Libs2"
+        extension "jar"
+        from fileTree(dir: "libs", include: "**/*.so")
+        into "lib"
+    }
+
+    tasks.withType(JavaCompile) {
+        compileTask -> compileTask.dependsOn(nativeLibsToJar)
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    packagingOptions {
+        pickFirst 'lib/armeabi-v7a/libvraudio_engine.so'
+        pickFirst 'lib/armeabi-v7a/libvrtoolkit.so'
+    }
+
+    buildToolsVersion '29.0.3'
+
+}
+
+
+dependencies {
+    api fileTree(include: ['*.jar'], dir: 'libs')
+    compile project.depAndroidSupport
+    compile project.depSupportAnnotations
+    api project(':rajawali')
+    api project(':PvrSDK-Native-release')
+}
+
+apply from: '../maven_push.gradle'

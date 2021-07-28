@@ -1,0 +1,54 @@
+apply plugin: 'com.android.library'
+
+def releaseTime() {
+    return new Date().format("yyyyMMdd", TimeZone.getTimeZone("UTC"))
+}
+
+android {
+    compileSdkVersion 29
+    buildToolsVersion "29.0.3"
+
+    defaultConfig {
+        minSdkVersion 26
+        targetSdkVersion 29
+        versionCode 1
+        versionName "1.0"
+    }
+    lintOptions.abortOnError false
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    android.libraryVariants.all { variant ->
+        /*variant.outputs.each { output ->
+            def outputFile = output.outputFile
+            if (outputFile != null && outputFile.name.endsWith('.aar')) {
+                //这里修改文件名
+                def fileName = outputFile.name.replace("RockVR-UI","rockvrui-${defaultConfig.versionName}-${releaseTime()}")
+                output.outputFile = new File(outputFile.parent, fileName)
+            }
+        }*/
+        variant.outputs.all {
+            outputFileName = "rockvrui-${defaultConfig.versionName}-${releaseTime()}.apk"
+        }
+    }
+    packagingOptions {
+        pickFirst 'lib/armeabi-v7a/libvraudio_engine.so'
+        pickFirst 'lib/armeabi-v7a/libvrtoolkit.so'
+    }
+}
+
+
+dependencies {
+    api fileTree(dir: 'libs', include: ['*.jar'])
+    testImplementation 'junit:junit:4.13.2'
+    api project(':rajawali')
+    api project(':rajawalivr')
+}
