@@ -1,5 +1,7 @@
 # Android_Native_Controller_Demo
 
+- If you have any questions/comments, please visit [**Pico Developer Answers**](https://devanswers.pico-interactive.com/) and raise your question there.
+
 ## Introduction
 
-This demo shows how to use [Pico Android Native SDK](https://developer.pico-interactive.com/sdk/index?id=6).
+The project integrates `Pico Native SDK v1.3.6` to show how to load the controller model and show the controller button instructions.
